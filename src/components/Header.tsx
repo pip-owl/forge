@@ -1,5 +1,7 @@
 interface HeaderProps {
   dailyCraftsRemaining: number;
+  bonusForges: number;
+  totalForgesAvailable: number;
   inventoryCount: number;
   onOpenInventory: () => void;
   onOpenForge: () => void;
@@ -10,6 +12,8 @@ interface HeaderProps {
 
 export function Header({ 
   dailyCraftsRemaining, 
+  bonusForges,
+  totalForgesAvailable,
   inventoryCount, 
   onOpenInventory, 
   onOpenForge,
@@ -53,8 +57,9 @@ export function Header({
           <span className="stat-icon">⚡</span>
           <div className="stat-info">
             <span className="stat-label">Daily Crafts</span>
-            <span className={`stat-value ${dailyCraftsRemaining === 0 ? 'empty' : ''}`}>
-              {dailyCraftsRemaining}
+            <span className={`stat-value ${totalForgesAvailable === 0 ? 'empty' : ''}`}>
+              {totalForgesAvailable}
+              {bonusForges > 0 && <span className="bonus-indicator"> (+{bonusForges})</span>}
             </span>
           </div>
         </div>

@@ -21,6 +21,7 @@ export function useGameState() {
     inventory: [],
     lastPlayedDate: getTodayString(),
     dailyCraftsRemaining: DAILY_CRAFTS_LIMIT,
+    bonusForges: 0,
     player: DEFAULT_PLAYER,
     dungeon: createDailyDungeon(getTodayString())
   }));
@@ -40,6 +41,7 @@ export function useGameState() {
             inventory: parsed.inventory,
             lastPlayedDate: today,
             dailyCraftsRemaining: DAILY_CRAFTS_LIMIT,
+            bonusForges: 0,
             player: parsed.player || DEFAULT_PLAYER,
             dungeon: createDailyDungeon(today)
           });
@@ -48,6 +50,7 @@ export function useGameState() {
           const needsDungeonReset = isNewDay(parsed.dungeon?.lastResetDate || parsed.lastPlayedDate);
           setGameState({
             ...parsed,
+            bonusForges: parsed.bonusForges || 0,
             player: parsed.player || DEFAULT_PLAYER,
             dungeon: needsDungeonReset ? createDailyDungeon(parsed.lastPlayedDate) : (parsed.dungeon || createDailyDungeon(parsed.lastPlayedDate))
           });
@@ -112,27 +115,30 @@ export function useGameState() {
 
   const attackEnemy = useCallback((enemyId: string): { damage: number; enemyDefeated: boolean } => {
     const damage = calculatePlayerDamage(gameState.player);
+    let enemyWasDefeated = false;
     
     setGameState(prev => {
-      const enemies = prev.dungeon.enemies.map(e => 
-        e.id === enemyId 
-          ? { ...e, currentHp: Math.max(0, e.currentHp - damage) }
-          : e
-      );
+      const enemies = prev.dungeon.enemies.map(e => {
+        if (e.id !== enemyId) return e;
+        const newHp = Math.max(0, e.currentHp - damage);
+        const defeated = newHp <= 0;
+        if (defeated) enemyWasDefeated = true;
+        return { ...e, currentHp: newHp, defeated };
+      });
       
-      const allDefeated = enemies.every(e => e.defeated || e.currentHp === 0);
+      const allDefeated = enemies.every(e => e.defeated || e.currentHp <= 0);
       
       return {
         ...prev,
         dungeon: {
           ...prev.dungeon,
-          enemies: enemies.map(e => e.id === enemyId && e.currentHp === 0 ? { ...e, defeated: true } : e),
+          enemies,
           cleared: allDefeated
         }
       };
     });
 
-    return { damage, enemyDefeated: false };
+    return { damage, enemyDefeated: enemyWasDefeated };
   }, [gameState.player]);
 
   const enemyAttack = useCallback((enemy: Enemy): { damage: number; playerDefeated: boolean } => {
@@ -250,9 +256,35 @@ export function useGameState() {
     return { success: true, message: 'You rest and recover your strength...' };
   }, [gameState.dungeon.hasRested]);
 
+  // Award bonus forges based on dungeon progress
+  // Clear 1 enemy: +0 bonus
+  // Clear 2 enemies: +1 bonus
+  // Clear all 3 enemies: +2 bonus
+  const awardBonusForges = useCallback((enemiesDefeated: number): number => {
+    let bonus = 0;
+    if (enemiesDefeated >= 3) {
+      bonus = 2;
+    } else if (enemiesDefeated >= 2) {
+      bonus = 1;
+    }
+    
+    if (bonus > 0) {
+      setGameState(prev => ({
+        ...prev,
+        bonusForges: prev.bonusForges + bonus
+      }));
+    }
+    
+    return bonus;
+  }, []);
+
   const getCurrentEnemy = useCallback(() => {
     return gameState.dungeon.enemies[gameState.dungeon.currentEnemyIndex];
   }, [gameState.dungeon]);
+
+  // Calculate total available forges (base + bonus)
+  const totalForgesAvailable = gameState.dailyCraftsRemaining + gameState.bonusForges;
+  const canCraft = totalForgesAvailable > 0;
 
   return {
     gameState,
@@ -260,7 +292,8 @@ export function useGameState() {
     addItem,
     removeItem,
     resetDailyCrafts,
-    canCraft: gameState.dailyCraftsRemaining > 0,
+    canCraft,
+    totalForgesAvailable,
     hasRested: gameState.dungeon.hasRested,
     // Combat
     equipWeapon,
@@ -270,6 +303,7 @@ export function useGameState() {
     awardXp,
     healPlayer,
     rest,
+    awardBonusForges,
     recordWin,
     recordLoss,
     nextEnemy,

@@ -19,7 +19,7 @@ interface BattleProps {
   onRecordLoss: () => void;
   onNextEnemy: () => void;
   onResetDungeon: () => void;
-  canGetBonusMaterial: boolean;
+  onAwardBonusForges: (enemiesDefeated: number) => number;
 }
 
 export function Battle({
@@ -38,7 +38,7 @@ export function Battle({
   onRecordLoss,
   onNextEnemy,
   onResetDungeon,
-  canGetBonusMaterial
+  onAwardBonusForges
 }: BattleProps) {
   const [combatLog, setCombatLog] = useState<CombatLog[]>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
@@ -47,7 +47,7 @@ export function Battle({
   const [playerAnimating, setPlayerAnimating] = useState(false);
   const [enemyAnimating, setEnemyAnimating] = useState(false);
   const [damageNumbers, setDamageNumbers] = useState<{ id: string; value: number; isPlayer: boolean; x: number; y: number }[]>([]);
-  const [bonusMaterialClaimed, setBonusMaterialClaimed] = useState(false);
+  const [bonusForgesAwarded, setBonusForgesAwarded] = useState<number | null>(null);
 
   const addLog = useCallback((message: string, type: CombatLog['type']) => {
     setCombatLog(prev => [...prev.slice(-20), { id: Date.now().toString(), message, type }]);
@@ -65,6 +65,12 @@ export function Battle({
 
   const handleAttack = useCallback(() => {
     if (!currentEnemy || !isPlayerTurn || isCombatOver || currentEnemy.defeated) return;
+    
+    // Safeguard: if enemy HP is already <= 0, force defeat handling
+    if (currentEnemy.currentHp <= 0) {
+      addLog(`${currentEnemy.name} is already defeated!`, 'reward');
+      return;
+    }
 
     setPlayerAnimating(true);
     
@@ -80,12 +86,19 @@ export function Battle({
       const updatedEnemy = { ...currentEnemy, currentHp: Math.max(0, currentEnemy.currentHp - result.damage) };
       
       if (updatedEnemy.currentHp <= 0) {
+        const enemiesDefeated = currentEnemyIndex + 1;
         addLog(`${currentEnemy.name} defeated! +${currentEnemy.xpReward} XP`, 'reward');
         onAwardXp(currentEnemy.xpReward);
         
         // Check if dungeon cleared
         if (currentEnemyIndex >= 2) {
           addLog('🏆 DUNGEON CLEARED! 🏆', 'reward');
+          // Award bonus forges based on enemies defeated (3 enemies = +2 bonus)
+          const bonusForges = onAwardBonusForges(enemiesDefeated);
+          if (bonusForges > 0) {
+            setBonusForgesAwarded(bonusForges);
+            addLog(`🔥 +${bonusForges} Bonus Forge${bonusForges > 1 ? 's' : ''} awarded!`, 'reward');
+          }
           onRecordWin();
           setIsCombatOver(true);
         } else {
@@ -159,13 +172,13 @@ export function Battle({
     setCombatLog([]);
     setIsPlayerTurn(true);
     setIsCombatOver(false);
-    setBonusMaterialClaimed(false);
+    setBonusForgesAwarded(null);
   }, [onResetDungeon]);
 
-  const claimBonusMaterial = useCallback(() => {
-    setBonusMaterialClaimed(true);
-    addLog('Bonus material claimed! Use it in the Forge.', 'reward');
-  }, [addLog]);
+  const claimBonusForges = useCallback(() => {
+    // Bonus forges are already awarded, just clear the notification
+    setBonusForgesAwarded(null);
+  }, []);
 
   // Filter weapons and armor from inventory
   const weapons = inventory.filter(item => item.type === 'sword' || item.type === 'axe');
@@ -357,11 +370,11 @@ export function Battle({
         {!isCombatOver && currentEnemy ? (
           <>
             <button
-              className={`attack-btn ${!isPlayerTurn ? 'disabled' : ''}`}
+              className={`attack-btn ${!isPlayerTurn || !currentEnemy || currentEnemy.currentHp <= 0 || currentEnemy.defeated ? 'disabled' : ''}`}
               onClick={handleAttack}
-              disabled={!isPlayerTurn}
+              disabled={!isPlayerTurn || !currentEnemy || currentEnemy.currentHp <= 0 || currentEnemy.defeated}
             >
-              ⚔️ Attack
+              {currentEnemy?.currentHp <= 0 || currentEnemy?.defeated ? '💀 Enemy Defeated' : '⚔️ Attack'}
             </button>
             <button
               className={`heal-btn ${!isPlayerTurn || hasRested ? 'disabled' : ''}`}
@@ -376,10 +389,14 @@ export function Battle({
             {player.currentHp > 0 && (
               <>
                 <h3>Victory! 🎉</h3>
-                {canGetBonusMaterial && !bonusMaterialClaimed && (
-                  <button className="bonus-btn" onClick={claimBonusMaterial}>
-                    🎁 Claim Bonus Material
-                  </button>
+                {bonusForgesAwarded !== null && bonusForgesAwarded > 0 && (
+                  <div className="bonus-forges-reward">
+                    <span className="bonus-icon">🔥</span>
+                    <span className="bonus-text">+{bonusForgesAwarded} Bonus Forge{bonusForgesAwarded > 1 ? 's' : ''}!</span>
+                    <button className="bonus-btn" onClick={claimBonusForges}>
+                      Claim
+                    </button>
+                  </div>
                 )}
               </>
             )}

@@ -6,14 +6,29 @@ interface ForgeSlotsProps {
   onCraft: () => void;
   canCraft: boolean;
   isCrafting: boolean;
+  dailyCraftsRemaining: number;
+  bonusForges: number;
+  totalForgesAvailable: number;
 }
 
-export function ForgeSlots({ selectedMaterials, onRemove, onCraft, canCraft, isCrafting }: ForgeSlotsProps) {
+export function ForgeSlots({ selectedMaterials, onRemove, onCraft, canCraft, isCrafting, dailyCraftsRemaining, bonusForges, totalForgesAvailable }: ForgeSlotsProps) {
   const slots = [0, 1, 2];
 
   return (
     <div className="forge-container">
       <h3 className="section-title">🔥 The Forge</h3>
+      
+      <div className="forge-counter">
+        <span className="forge-counter-label">Forges Available:</span>
+        <span className="forge-counter-value">
+          <span className="base-forges">{dailyCraftsRemaining}</span>
+          <span className="base-total">/5</span>
+          {bonusForges > 0 && (
+            <span className="bonus-forges"> (+{bonusForges} bonus)</span>
+          )}
+        </span>
+        <span className="forge-total">Total: {totalForgesAvailable}</span>
+      </div>
       
       <div className="forge-slots">
         {slots.map(slotIndex => {

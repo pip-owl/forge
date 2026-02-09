@@ -19,6 +19,7 @@ function App() {
     addItem, 
     removeItem, 
     canCraft,
+    totalForgesAvailable,
     hasRested,
     equipWeapon,
     equipArmor,
@@ -26,6 +27,7 @@ function App() {
     enemyAttack,
     awardXp,
     rest,
+    awardBonusForges,
     recordWin,
     recordLoss,
     nextEnemy,
@@ -98,6 +100,8 @@ function App() {
     <div className="app">
       <Header
         dailyCraftsRemaining={gameState.dailyCraftsRemaining}
+        bonusForges={gameState.bonusForges}
+        totalForgesAvailable={totalForgesAvailable}
         inventoryCount={gameState.inventory.length}
         onOpenInventory={() => setActiveTab('inventory')}
         onOpenForge={() => setActiveTab('forge')}

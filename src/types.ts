@@ -78,6 +78,7 @@ export interface GameState {
   inventory: CraftedItem[];
   lastPlayedDate: string;
   dailyCraftsRemaining: number;
+  bonusForges: number;
   player: Player;
   dungeon: DungeonState;
 }
