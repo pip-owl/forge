@@ -85,6 +85,8 @@ body {
   padding: var(--spacing-md) var(--spacing-xl);
   background: var(--bg-tertiary);
   border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
 }
 
 .header-left {
@@ -119,6 +121,42 @@ body {
   letter-spacing: 0.2em;
 }
 
+/* Header Navigation */
+.header-nav {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: var(--bg-card);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.nav-tab {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.nav-tab.active {
+  background: linear-gradient(135deg, var(--fire-orange) 0%, var(--fire-red) 100%);
+  color: white;
+  font-weight: 600;
+}
+
 .header-stats {
   display: flex;
   gap: var(--spacing-md);
@@ -140,15 +178,15 @@ body {
   transform: translateY(-1px);
 }
 
-.inventory-btn {
+.inventory-stat {
   cursor: pointer;
   background: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid var(--fire-orange);
+  border: 1px solid var(--border-color);
 }
 
-.inventory-btn:hover {
-  background: var(--fire-glow);
+.inventory-stat:hover {
+  border-color: var(--fire-orange);
   box-shadow: 0 0 15px var(--fire-glow);
 }
 
@@ -792,9 +830,21 @@ body {
     font-size: 1.25rem;
   }
   
+  .header-nav {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .nav-tab {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.75rem;
+  }
+  
   .header-stats {
     width: 100%;
     justify-content: center;
+    order: 2;
   }
   
   .game-container {
@@ -851,4 +901,35 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-highlight);
+}
+
+/* Battle Tab */
+.battle-tab {
+  grid-column: 1 / -1;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Inventory Tab */
+.inventory-tab {
+  grid-column: 1 / -1;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.inventory-view {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+/* Tab specific responsive */
+@media (max-width: 900px) {
+  .battle-tab,
+  .inventory-tab {
+    max-width: 100%;
+  }
 }

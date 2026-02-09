@@ -33,10 +33,52 @@ export interface CraftedItem {
   icon: string;
 }
 
+// Combat Types
+export interface Player {
+  level: number;
+  xp: number;
+  maxHp: number;
+  currentHp: number;
+  equippedWeapon: CraftedItem | null;
+  equippedArmor: CraftedItem | null;
+  wins: number;
+  losses: number;
+}
+
+export type EnemyType = 'goblin' | 'orc' | 'dragon';
+
+export interface Enemy {
+  id: string;
+  name: string;
+  type: EnemyType;
+  maxHp: number;
+  currentHp: number;
+  damage: number;
+  icon: string;
+  xpReward: number;
+  defeated: boolean;
+}
+
+export interface DungeonState {
+  enemies: Enemy[];
+  currentEnemyIndex: number;
+  cleared: boolean;
+  lastResetDate: string;
+}
+
+export interface CombatLog {
+  id: string;
+  message: string;
+  type: 'player' | 'enemy' | 'system' | 'reward';
+  damage?: number;
+}
+
 export interface GameState {
   inventory: CraftedItem[];
   lastPlayedDate: string;
   dailyCraftsRemaining: number;
+  player: Player;
+  dungeon: DungeonState;
 }
 
 export const RARITY_COLORS: Record<Rarity, string> = {

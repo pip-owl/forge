@@ -1,4 +1,4 @@
-import { Material, ItemType, Rarity, CraftedItem, ITEM_ICONS } from '../types';
+import { Material, ItemType, Rarity, CraftedItem, ITEM_ICONS, Enemy, DungeonState, Player } from '../types';
 
 // Available materials in the game
 export const MATERIALS: Material[] = [
@@ -163,4 +163,81 @@ export function isNewDay(lastPlayed: string): boolean {
 // Get today's date string
 export function getTodayString(): string {
   return new Date().toISOString().split('T')[0];
+}
+
+// Combat Constants
+export const XP_TO_LEVEL = 100;
+
+// Create daily dungeon enemies
+export function createDailyDungeon(dateStr: string): DungeonState {
+  const seed = hashString(dateStr + '-dungeon');
+  
+  const enemies: Enemy[] = [
+    {
+      id: 'enemy-1',
+      name: 'Goblin Scout',
+      type: 'goblin',
+      maxHp: 40 + Math.floor(seededRandom(seed) * 20),
+      currentHp: 40 + Math.floor(seededRandom(seed) * 20),
+      damage: 8 + Math.floor(seededRandom(seed + 1) * 5),
+      icon: '👺',
+      xpReward: 25,
+      defeated: false
+    },
+    {
+      id: 'enemy-2',
+      name: 'Orc Warrior',
+      type: 'orc',
+      maxHp: 80 + Math.floor(seededRandom(seed + 2) * 30),
+      currentHp: 80 + Math.floor(seededRandom(seed + 2) * 30),
+      damage: 15 + Math.floor(seededRandom(seed + 3) * 8),
+      icon: '👹',
+      xpReward: 50,
+      defeated: false
+    },
+    {
+      id: 'enemy-3',
+      name: 'Ancient Dragon',
+      type: 'dragon',
+      maxHp: 150 + Math.floor(seededRandom(seed + 4) * 50),
+      currentHp: 150 + Math.floor(seededRandom(seed + 4) * 50),
+      damage: 25 + Math.floor(seededRandom(seed + 5) * 15),
+      icon: '🐉',
+      xpReward: 100,
+      defeated: false
+    }
+  ];
+  
+  return {
+    enemies,
+    currentEnemyIndex: 0,
+    cleared: false,
+    lastResetDate: dateStr
+  };
+}
+
+// Calculate player's attack damage
+export function calculatePlayerDamage(player: Player): number {
+  const baseDamage = 5 + player.level * 2;
+  const weaponDamage = player.equippedWeapon?.stats.damage || 0;
+  const magicBonus = Math.floor((player.equippedWeapon?.stats.magic || 0) * 0.5);
+  
+  // Add some variance
+  const variance = 0.8 + Math.random() * 0.4;
+  return Math.floor((baseDamage + weaponDamage + magicBonus) * variance);
+}
+
+// Calculate damage reduction from armor
+export function calculateDamageReduction(player: Player): number {
+  const baseReduction = 0;
+  const armorDefense = player.equippedArmor?.stats.defense || 0;
+  const magicDefense = Math.floor((player.equippedArmor?.stats.magic || 0) * 0.3);
+  
+  // Cap at 75% damage reduction
+  return Math.min(0.75, (baseReduction + armorDefense + magicDefense) / 100);
+}
+
+// Get XP needed for next level
+export function getXpForNextLevel(level: number): number {
+  return XP_TO_LEVEL * level;
 }

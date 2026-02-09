@@ -2,9 +2,21 @@ interface HeaderProps {
   dailyCraftsRemaining: number;
   inventoryCount: number;
   onOpenInventory: () => void;
+  onOpenForge: () => void;
+  onOpenBattle: () => void;
+  activeTab: 'forge' | 'battle' | 'inventory';
+  playerLevel: number;
 }
 
-export function Header({ dailyCraftsRemaining, inventoryCount, onOpenInventory }: HeaderProps) {
+export function Header({ 
+  dailyCraftsRemaining, 
+  inventoryCount, 
+  onOpenInventory, 
+  onOpenForge,
+  onOpenBattle,
+  activeTab,
+  playerLevel
+}: HeaderProps) {
   return (
     <header className="game-header">
       <div className="header-left">
@@ -14,6 +26,27 @@ export function Header({ dailyCraftsRemaining, inventoryCount, onOpenInventory }
         </h1>
         <p className="game-subtitle">Master Blacksmith</p>
       </div>
+
+      <nav className="header-nav">
+        <button 
+          className={`nav-tab ${activeTab === 'forge' ? 'active' : ''}`}
+          onClick={onOpenForge}
+        >
+          🔨 Forge
+        </button>
+        <button 
+          className={`nav-tab ${activeTab === 'battle' ? 'active' : ''}`}
+          onClick={onOpenBattle}
+        >
+          ⚔️ Battle
+        </button>
+        <button 
+          className={`nav-tab ${activeTab === 'inventory' ? 'active' : ''}`}
+          onClick={onOpenInventory}
+        >
+          🎒 Inventory
+        </button>
+      </nav>
 
       <div className="header-stats">
         <div className="stat-badge">
@@ -26,13 +59,21 @@ export function Header({ dailyCraftsRemaining, inventoryCount, onOpenInventory }
           </div>
         </div>
 
-        <button className="stat-badge inventory-btn" onClick={onOpenInventory}>
+        <div className="stat-badge">
+          <span className="stat-icon">⭐</span>
+          <div className="stat-info">
+            <span className="stat-label">Level</span>
+            <span className="stat-value">{playerLevel}</span>
+          </div>
+        </div>
+
+        <div className="stat-badge inventory-stat">
           <span className="stat-icon">🎒</span>
           <div className="stat-info">
-            <span className="stat-label">Inventory</span>
+            <span className="stat-label">Items</span>
             <span className="stat-value">{inventoryCount}</span>
           </div>
-        </button>
+        </div>
       </div>
     </header>
   );
