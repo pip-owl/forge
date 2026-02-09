@@ -39,6 +39,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -47,6 +48,8 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.5;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior-y: none;
 }
 
 /* Loading Screen */
@@ -144,11 +147,19 @@ body {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  /* Mobile touch target */
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
 }
 
 .nav-tab:hover {
   color: var(--text-primary);
   background: var(--bg-tertiary);
+}
+
+.nav-tab:active {
+  transform: scale(0.98);
 }
 
 .nav-tab.active {
@@ -171,11 +182,17 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   transition: all 0.2s ease;
+  /* Mobile touch target */
+  min-height: 44px;
 }
 
 .stat-badge:hover {
   border-color: var(--border-highlight);
   transform: translateY(-1px);
+}
+
+.stat-badge:active {
+  transform: scale(0.98);
 }
 
 .inventory-stat {
@@ -268,6 +285,10 @@ body {
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  /* Mobile touch target - min 44px */
+  min-height: 80px;
+  /* Better touch feedback */
+  touch-action: manipulation;
 }
 
 .material-card::before {
@@ -290,6 +311,11 @@ body {
   border-color: var(--border-highlight);
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.material-card:active {
+  transform: scale(0.98);
+  border-color: var(--fire-orange);
 }
 
 .material-card.selected {
@@ -342,6 +368,51 @@ body {
   gap: var(--spacing-lg);
 }
 
+/* Forge Counter */
+.forge-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+
+.forge-counter-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.forge-counter-value {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-weight: 600;
+}
+
+.base-forges {
+  color: var(--fire-orange);
+  font-size: 1.125rem;
+}
+
+.base-total {
+  color: var(--text-muted);
+}
+
+.bonus-forges {
+  color: var(--fire-yellow);
+  font-size: 0.875rem;
+}
+
+.forge-total {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding-left: var(--spacing-sm);
+  border-left: 1px solid var(--border-color);
+}
+
 .forge-slots {
   display: flex;
   flex-direction: column;
@@ -360,6 +431,9 @@ body {
   min-height: 100px;
   transition: all 0.3s ease;
   cursor: pointer;
+  /* Mobile touch target */
+  min-height: 80px;
+  touch-action: manipulation;
 }
 
 .forge-slot.empty {
@@ -384,6 +458,10 @@ body {
 .forge-slot:hover.filled {
   border-color: var(--fire-red);
   background: linear-gradient(135deg, var(--bg-card) 0%, rgba(220, 38, 38, 0.1) 100%);
+}
+
+.forge-slot:active.filled {
+  transform: scale(0.98);
 }
 
 .slot-placeholder {
@@ -426,6 +504,9 @@ body {
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  /* Mobile touch target - min 44px height */
+  min-height: 56px;
+  touch-action: manipulation;
 }
 
 .craft-button:hover:not(:disabled) {
@@ -434,7 +515,7 @@ body {
 }
 
 .craft-button:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .craft-button:disabled {
@@ -475,6 +556,8 @@ body {
   padding: var(--spacing-md);
   z-index: 100;
   backdrop-filter: blur(4px);
+  /* Ensure modal is scrollable on mobile */
+  overflow-y: auto;
 }
 
 .modal {
@@ -486,6 +569,8 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   animation: modalIn 0.3s ease;
+  /* Better mobile handling */
+  margin: auto;
 }
 
 @keyframes modalIn {
@@ -521,10 +606,20 @@ body {
   cursor: pointer;
   padding: var(--spacing-xs);
   transition: color 0.2s ease;
+  /* Mobile touch target */
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-btn:hover {
   color: var(--text-primary);
+}
+
+.close-btn:active {
+  transform: scale(0.95);
 }
 
 /* Crafting Result */
@@ -642,6 +737,9 @@ body {
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
+  /* Mobile touch target */
+  min-height: 48px;
+  touch-action: manipulation;
 }
 
 .btn-secondary {
@@ -655,6 +753,10 @@ body {
   color: var(--text-primary);
 }
 
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
 .btn-primary {
   background: linear-gradient(135deg, var(--fire-orange) 0%, var(--fire-red) 100%);
   color: white;
@@ -664,6 +766,10 @@ body {
 .btn-primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 15px var(--fire-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* Inventory */
@@ -775,6 +881,12 @@ body {
   opacity: 0;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  /* Mobile touch target - always visible on touch devices */
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inventory-item:hover .delete-btn {
@@ -783,6 +895,13 @@ body {
 
 .delete-btn:hover {
   opacity: 1 !important;
+}
+
+/* Always show delete button on mobile/touch */
+@media (hover: none) and (pointer: coarse) {
+  .delete-btn {
+    opacity: 0.5;
+  }
 }
 
 /* Footer */
@@ -796,92 +915,6 @@ body {
 .game-footer p {
   font-size: 0.875rem;
   color: var(--text-muted);
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .game-container {
-    grid-template-columns: 1fr;
-  }
-  
-  .forge-container {
-    order: -1;
-  }
-  
-  .forge-slots {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  
-  .forge-slot {
-    flex: 1;
-    min-width: 120px;
-  }
-}
-
-@media (max-width: 600px) {
-  .game-header {
-    flex-direction: column;
-    gap: var(--spacing-md);
-    text-align: center;
-  }
-  
-  .game-title {
-    font-size: 1.25rem;
-  }
-  
-  .header-nav {
-    order: 1;
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .nav-tab {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.75rem;
-  }
-  
-  .header-stats {
-    width: 100%;
-    justify-content: center;
-    order: 2;
-  }
-  
-  .game-container {
-    padding: var(--spacing-md);
-  }
-  
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  }
-  
-  .material-icon {
-    font-size: 1.5rem;
-  }
-  
-  .material-name {
-    font-size: 0.75rem;
-  }
-  
-  .forge-slots {
-    flex-direction: column;
-  }
-  
-  .forge-slot {
-    min-height: 80px;
-  }
-  
-  .inventory-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .result-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-actions {
-    flex-direction: column;
-  }
 }
 
 /* Scrollbar */
@@ -926,10 +959,292 @@ body {
   overflow: hidden;
 }
 
-/* Tab specific responsive */
+/* ============================================
+   MOBILE RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Tablet and below (900px) */
 @media (max-width: 900px) {
+  .game-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+  }
+  
+  .forge-container {
+    order: -1;
+  }
+  
+  .forge-slots {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .forge-slot {
+    flex: 1;
+    min-width: 100px;
+    min-height: 100px;
+  }
+
   .battle-tab,
   .inventory-tab {
     max-width: 100%;
   }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* Mobile phones (600px and below) */
+@media (max-width: 600px) {
+  /* Header mobile fixes */
+  .game-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .game-title {
+    font-size: 1.25rem;
+  }
+  
+  .header-nav {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+    padding: var(--spacing-xs);
+  }
+  
+  .nav-tab {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.875rem;
+    flex: 1;
+    min-height: 48px;
+  }
+  
+  .header-stats {
+    width: 100%;
+    justify-content: center;
+    order: 2;
+    gap: var(--spacing-sm);
+  }
+
+  .stat-badge {
+    padding: var(--spacing-sm);
+    min-height: 48px;
+  }
+
+  /* Game container mobile */
+  .game-container {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+
+  /* Material grid mobile */
+  .material-grid {
+    padding: var(--spacing-md);
+  }
+  
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+  
+  .material-card {
+    min-height: 100px;
+    padding: var(--spacing-sm);
+  }
+  
+  .material-icon {
+    font-size: 2rem;
+  }
+  
+  .material-name {
+    font-size: 0.875rem;
+  }
+
+  /* Forge slots mobile */
+  .forge-container {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .forge-slots {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .forge-slot {
+    min-height: 72px;
+    padding: var(--spacing-sm);
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .forge-slot .slot-icon {
+    font-size: 1.5rem;
+  }
+
+  .forge-slot .slot-name {
+    font-size: 0.875rem;
+    flex: 1;
+  }
+
+  .forge-slot .slot-hint {
+    font-size: 0.625rem;
+  }
+
+  .slot-placeholder {
+    font-size: 1.5rem;
+  }
+
+  /* Craft button mobile */
+  .craft-button {
+    min-height: 56px;
+    font-size: 1rem;
+    padding: var(--spacing-md);
+  }
+
+  /* Forge hint mobile */
+  .forge-hint {
+    font-size: 0.8rem;
+    padding: var(--spacing-sm);
+  }
+
+  /* Inventory mobile */
+  .inventory-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Modal mobile */
+  .modal {
+    margin: var(--spacing-sm);
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: var(--spacing-md);
+  }
+
+  .modal-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    padding: var(--spacing-md);
+  }
+
+  .modal-actions button {
+    width: 100%;
+    min-height: 52px;
+    font-size: 1rem;
+  }
+
+  /* Result mobile */
+  .result-header {
+    padding: var(--spacing-lg);
+  }
+
+  .result-icon {
+    font-size: 3rem;
+  }
+
+  .result-name {
+    font-size: 1.25rem;
+  }
+
+  .result-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .result-content {
+    padding: var(--spacing-md);
+  }
+
+  /* Section titles mobile */
+  .section-title {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  /* Forge counter mobile */
+  .forge-counter {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+  }
+
+  .forge-counter-label {
+    font-size: 0.8rem;
+  }
+
+  .forge-total {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    padding-left: 0;
+    padding-top: var(--spacing-xs);
+  }
+}
+
+/* Small phones (375px iPhone SE size) */
+@media (max-width: 375px) {
+  .game-header {
+    padding: var(--spacing-sm);
+  }
+
+  .game-title {
+    font-size: 1.125rem;
+  }
+
+  .nav-tab {
+    font-size: 0.8rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-height: 44px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+  }
+
+  .material-card {
+    min-height: 90px;
+    padding: var(--spacing-xs);
+  }
+
+  .material-icon {
+    font-size: 1.75rem;
+  }
+
+  .material-name {
+    font-size: 0.8rem;
+  }
+
+  .forge-slot {
+    min-height: 64px;
+  }
+
+  .craft-button {
+    min-height: 52px;
+    font-size: 0.95rem;
+  }
+
+  .modal-actions button {
+    min-height: 48px;
+  }
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Better touch scrolling on iOS */
+* {
+  -webkit-overflow-scrolling: touch;
 }
