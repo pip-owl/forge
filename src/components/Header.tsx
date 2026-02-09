@@ -1,5 +1,4 @@
 interface HeaderProps {
-  dailyCraftsRemaining: number;
   bonusForges: number;
   totalForgesAvailable: number;
   inventoryCount: number;
@@ -11,7 +10,6 @@ interface HeaderProps {
 }
 
 export function Header({ 
-  dailyCraftsRemaining, 
   bonusForges,
   totalForgesAvailable,
   inventoryCount, 

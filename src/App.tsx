@@ -99,7 +99,6 @@ function App() {
   return (
     <div className="app">
       <Header
-        dailyCraftsRemaining={gameState.dailyCraftsRemaining}
         bonusForges={gameState.bonusForges}
         totalForgesAvailable={totalForgesAvailable}
         inventoryCount={gameState.inventory.length}
@@ -126,6 +125,9 @@ function App() {
               onCraft={handleCraft}
               canCraft={canCraft && selectedMaterials.length === 3 && !isCrafting}
               isCrafting={isCrafting}
+              dailyCraftsRemaining={gameState.dailyCraftsRemaining}
+              bonusForges={gameState.bonusForges}
+              totalForgesAvailable={totalForgesAvailable}
             />
           </>
         )}
@@ -144,11 +146,11 @@ function App() {
               onEnemyAttack={enemyAttack}
               onAwardXp={awardXp}
               onRest={rest}
+              onAwardBonusForges={awardBonusForges}
               onRecordWin={recordWin}
               onRecordLoss={recordLoss}
               onNextEnemy={nextEnemy}
               onResetDungeon={resetDungeon}
-              canGetBonusMaterial={gameState.dungeon.cleared}
             />
           </div>
         )}
