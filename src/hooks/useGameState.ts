@@ -230,6 +230,26 @@ export function useGameState() {
     }));
   }, []);
 
+  const rest = useCallback((): { success: boolean; message: string } => {
+    if (gameState.dungeon.hasRested) {
+      return { success: false, message: 'You have already rested this dungeon!' };
+    }
+
+    setGameState(prev => ({
+      ...prev,
+      dungeon: {
+        ...prev.dungeon,
+        hasRested: true
+      },
+      player: {
+        ...prev.player,
+        currentHp: prev.player.maxHp
+      }
+    }));
+
+    return { success: true, message: 'You rest and recover your strength...' };
+  }, [gameState.dungeon.hasRested]);
+
   const getCurrentEnemy = useCallback(() => {
     return gameState.dungeon.enemies[gameState.dungeon.currentEnemyIndex];
   }, [gameState.dungeon]);
@@ -241,6 +261,7 @@ export function useGameState() {
     removeItem,
     resetDailyCrafts,
     canCraft: gameState.dailyCraftsRemaining > 0,
+    hasRested: gameState.dungeon.hasRested,
     // Combat
     equipWeapon,
     equipArmor,
@@ -248,6 +269,7 @@ export function useGameState() {
     enemyAttack,
     awardXp,
     healPlayer,
+    rest,
     recordWin,
     recordLoss,
     nextEnemy,

@@ -19,12 +19,13 @@ function App() {
     addItem, 
     removeItem, 
     canCraft,
+    hasRested,
     equipWeapon,
     equipArmor,
     attackEnemy,
     enemyAttack,
     awardXp,
-    healPlayer,
+    rest,
     recordWin,
     recordLoss,
     nextEnemy,
@@ -132,12 +133,13 @@ function App() {
               currentEnemy={currentEnemy}
               currentEnemyIndex={gameState.dungeon.currentEnemyIndex}
               inventory={gameState.inventory}
+              hasRested={hasRested}
               onEquipWeapon={equipWeapon}
               onEquipArmor={equipArmor}
               onAttack={attackEnemy}
               onEnemyAttack={enemyAttack}
               onAwardXp={awardXp}
-              onHeal={healPlayer}
+              onRest={rest}
               onRecordWin={recordWin}
               onRecordLoss={recordLoss}
               onNextEnemy={nextEnemy}

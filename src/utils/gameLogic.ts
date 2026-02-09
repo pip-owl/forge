@@ -212,7 +212,8 @@ export function createDailyDungeon(dateStr: string): DungeonState {
     enemies,
     currentEnemyIndex: 0,
     cleared: false,
-    lastResetDate: dateStr
+    lastResetDate: dateStr,
+    hasRested: false
   };
 }
 

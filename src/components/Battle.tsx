@@ -8,12 +8,13 @@ interface BattleProps {
   currentEnemy: Enemy | null;
   currentEnemyIndex: number;
   inventory: CraftedItem[];
+  hasRested: boolean;
   onEquipWeapon: (item: CraftedItem | null) => void;
   onEquipArmor: (item: CraftedItem | null) => void;
   onAttack: (enemyId: string) => { damage: number; enemyDefeated: boolean };
   onEnemyAttack: (enemy: Enemy) => { damage: number; playerDefeated: boolean };
   onAwardXp: (xp: number) => void;
-  onHeal: (amount?: number) => void;
+  onRest: () => { success: boolean; message: string };
   onRecordWin: () => void;
   onRecordLoss: () => void;
   onNextEnemy: () => void;
@@ -26,12 +27,13 @@ export function Battle({
   currentEnemy,
   currentEnemyIndex,
   inventory,
+  hasRested,
   onEquipWeapon,
   onEquipArmor,
   onAttack,
   onEnemyAttack,
   onAwardXp,
-  onHeal,
+  onRest,
   onRecordWin,
   onRecordLoss,
   onNextEnemy,
@@ -118,10 +120,39 @@ export function Battle({
   }, [currentEnemy, isPlayerTurn, isCombatOver, onAttack, onEnemyAttack, onAwardXp, onNextEnemy, onRecordWin, onRecordLoss, addLog, showDamageNumber, currentEnemyIndex]);
 
   const handleHeal = useCallback(() => {
-    if (!isPlayerTurn || isCombatOver) return;
-    onHeal(player.maxHp);
-    addLog('Restored to full health!', 'system');
-  }, [isPlayerTurn, isCombatOver, onHeal, player.maxHp, addLog]);
+    if (!isPlayerTurn || isCombatOver || !currentEnemy) return;
+    
+    // Try to rest - will fail if already rested
+    const restResult = onRest();
+    if (!restResult.success) {
+      addLog(restResult.message, 'system');
+      return;
+    }
+    
+    addLog(restResult.message, 'system');
+    addLog('You are fully healed!', 'system');
+    
+    // Enemy gets a free attack after rest
+    setIsPlayerTurn(false);
+    setTimeout(() => {
+      setEnemyAnimating(true);
+      
+      setTimeout(() => {
+        const enemyResult = onEnemyAttack(currentEnemy);
+        setEnemyAnimating(false);
+        showDamageNumber(enemyResult.damage, true);
+        addLog(`${currentEnemy.name} strikes while you rest! ${enemyResult.damage} damage!`, 'enemy');
+        
+        if (enemyResult.playerDefeated) {
+          addLog('You have been defeated...', 'system');
+          onRecordLoss();
+          setIsCombatOver(true);
+        } else {
+          setIsPlayerTurn(true);
+        }
+      }, 500);
+    }, 800);
+  }, [isPlayerTurn, isCombatOver, currentEnemy, onRest, onEnemyAttack, onRecordLoss, addLog, showDamageNumber]);
 
   const handleReset = useCallback(() => {
     onResetDungeon();
@@ -333,11 +364,11 @@ export function Battle({
               ⚔️ Attack
             </button>
             <button
-              className="heal-btn"
+              className={`heal-btn ${!isPlayerTurn || hasRested ? 'disabled' : ''}`}
               onClick={handleHeal}
-              disabled={!isPlayerTurn || player.currentHp >= player.maxHp}
+              disabled={!isPlayerTurn || hasRested}
             >
-              🏥 Rest (Full Heal)
+              {hasRested ? '💤 RESTED (Used)' : '🏥 Rest (Full Heal)'}
             </button>
           </>
         ) : isCombatOver ? (

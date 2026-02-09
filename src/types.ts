@@ -64,6 +64,7 @@ export interface DungeonState {
   currentEnemyIndex: number;
   cleared: boolean;
   lastResetDate: string;
+  hasRested: boolean;
 }
 
 export interface CombatLog {

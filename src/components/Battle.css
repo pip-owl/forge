@@ -386,7 +386,8 @@
   color: #22c55e;
 }
 
-.heal-btn:disabled {
+.heal-btn:disabled,
+.heal-btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
